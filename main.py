@@ -1,5 +1,6 @@
 # 词云图
 import time
+from posix import write
 
 from IPython.core.release import author
 from encodings.utf_7 import encode
@@ -8,6 +9,7 @@ from pydoc import browse
 from tkinter.ttk import Button
 import pyecharts.options as opts
 from PyQt5.QtGui import QFont, QImage
+from numpy.f2py.crackfortran import currentfilename
 from pyecharts.charts import WordCloud
 from pyecharts.globals import SymbolType
 from pyecharts.render import make_snapshot
@@ -19,10 +21,19 @@ from PyQt5.QtWidgets import (QMainWindow, QApplication, QDesktopWidget,
                              QApplication, QWidget, QHBoxLayout,
                              QStyleFactory, QTextEdit, QPushButton,
                              QVBoxLayout, QLabel, QComboBox, QAction,
-                             QMenu, QDialog)
+                             QMenu, QDialog, QFileDialog)
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 import json
 import ast
+example_json='''{
+    "date": [
+        ["花鸟市场", 1446],
+        ["汽车", 928],
+        ["视频", 906],
+        ["电视", 825]
+    ]
+}'''
 class EchartsWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -37,9 +48,17 @@ class EchartsWindow(QMainWindow):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu("文件")
         createAct = QAction("新建", self)
+        createAct.setShortcut('Ctrl+N')
+        createAct.triggered.connect(self.createFile)
         openAct = QAction("打开", self)
+        openAct.setShortcut('Ctrl+O')
+        openAct.triggered.connect(self.openFile)
         saveAct = QAction("保存", self)
+        saveAct.setShortcut("Ctrl+S")
+        saveAct.triggered.connect(self.saveFile)
         exitAct = QAction("退出", self)
+        exitAct.setShortcut("Ctrl+Q")
+        exitAct.triggered.connect(self.exitWindow)
         fileMenu.addAction(createAct)
         fileMenu.addAction(openAct)
         fileMenu.addAction(saveAct)
@@ -99,7 +118,7 @@ class EchartsWindow(QMainWindow):
         self.wordCloudType.addItem("DIAMOND词云图")
         self.wordCloudType.addItem("自定义图片词云图")
         self.wordCloudType.activated[str].connect(self.onActivated)
-        exampleBtn = QPushButton("加载示例")
+        exampleBtn = QPushButton("查看示例")
         clearBtn = QPushButton("清空内容")
         startBtn = QPushButton("生成网页")
         toImgBtn = QPushButton("生成图片")
@@ -122,20 +141,41 @@ class EchartsWindow(QMainWindow):
         self.center()
         self.setWindowTitle('词云图生成器')
         self.show()
+    def createFile(self):
+        fname = QFileDialog.getSaveFileName(self, "保存文件", '/home/Deepin-MHC/Documents/Python/Echarts', "Json Files(*.json)")
+        if fname[0]:
+            with open(fname[0], 'w') as f:
+                f.write(example_json)
+        self.textEdit.setText(example_json)
+        self.statusInfo.setText("新建文件" + fname[0])
+    def openFile(self):
+        fname = QFileDialog.getOpenFileName(self, '打开文件', '/home/Deepin-MHC/Documents/Python/Echarts', "Json Files (*.json)")
+        if fname[0]:
+            f = open(fname[0], 'r')
+            with f:
+                data = f.read()
+                self.textEdit.setText(data)
+        self.statusInfo.setText("打开文件" + fname[0])
+    def saveFile(self):
+        date = self.textEdit.toPlainText()
+        with open(currentFile, "w") as f:
+            f.write(date)
+        self.statusInfo.setText("保存文件"+currentFile)
+    def exitWindow(self):
+        QApplication.instance().quit()
     def clearClicked(self):
         sender = self.sender()
         self.textEdit.clear()
         self.statusInfo.setText(sender.text())
     def loadExample(self):
-        self.textEdit.clear()
-        jsonFile = self.loadJsonFile("example/example.json")
+        exampleDialog = QDialog(self)
+        layout = QHBoxLayout()
+        exampleText = QTextEdit()
+        exampleText.setText(example_json)
+        layout.addWidget(exampleText)
+        exampleDialog.setLayout(layout)
+        exampleDialog.exec()
         self.statusInfo.setText(self.sender().text()+"example/example.json")
-        self.textEdit.setText(json.dumps(jsonFile, indent=4, ensure_ascii=False))
-    def loadJsonFile(self, fileName):
-        with open(fileName, "r") as file:
-            jsonData = json.load(file)
-            # print(json.dumps(jsonData, indent=4))
-            return jsonData
     def onActivated(self, text):
         self.wordtype = text
     def toHtml(self):
