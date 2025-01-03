@@ -39,6 +39,9 @@ class EchartsWindow(QMainWindow):
         super().__init__()
         self.initUI()
     def initUI(self):
+        self.rootFile = "/home/Deepin-MHC/Documents/Python/Echarts"
+        self.currentFile = ""
+        self.imgUrl = ""
         self.widget = QWidget(self)
         self.resize(720, 420)
         # 布局
@@ -142,25 +145,36 @@ class EchartsWindow(QMainWindow):
         self.setWindowTitle('词云图生成器')
         self.show()
     def createFile(self):
-        fname = QFileDialog.getSaveFileName(self, "保存文件", '/home/Deepin-MHC/Documents/Python/Echarts', "Json Files(*.json)")
+        fname = QFileDialog.getSaveFileName(self, "创建文件", self.rootFile, "Json Files(*.json)")
         if fname[0]:
             with open(fname[0], 'w') as f:
                 f.write(example_json)
-        self.textEdit.setText(example_json)
-        self.statusInfo.setText("新建文件" + fname[0])
+            self.currentFile = fname[0]
+            self.textEdit.setText(example_json)
+            self.statusInfo.setText("新建文件" + fname[0])
     def openFile(self):
-        fname = QFileDialog.getOpenFileName(self, '打开文件', '/home/Deepin-MHC/Documents/Python/Echarts', "Json Files (*.json)")
+        fname = QFileDialog.getOpenFileName(self, '打开文件', self.rootFile, "Json Files (*.json)")
         if fname[0]:
             f = open(fname[0], 'r')
             with f:
                 data = f.read()
                 self.textEdit.setText(data)
-        self.statusInfo.setText("打开文件" + fname[0])
+            self.currentFile = fname[0]
+            self.statusInfo.setText("打开文件" + fname[0])
     def saveFile(self):
         date = self.textEdit.toPlainText()
-        with open(currentFile, "w") as f:
-            f.write(date)
-        self.statusInfo.setText("保存文件"+currentFile)
+        if self.currentFile == "":
+            fname = QFileDialog.getSaveFileName(self, "创建文件", self.rootFile,
+                                                "Json Files(*.json)")
+            if fname[0]:
+                with open(fname[0], 'w') as f:
+                    f.write(date)
+                self.currentFile = fname[0]
+                self.statusInfo.setText("新建文件" + self.currentFile)
+        else:
+            with open(self.currentFile, "w") as f:
+                f.write(date)
+            self.statusInfo.setText("保存文件"+self.currentFile)
     def exitWindow(self):
         QApplication.instance().quit()
     def clearClicked(self):
@@ -178,6 +192,12 @@ class EchartsWindow(QMainWindow):
         self.statusInfo.setText(self.sender().text()+"example/example.json")
     def onActivated(self, text):
         self.wordtype = text
+        if self.wordtype == "自定义图片词云图":
+            fname = QFileDialog.getOpenFileName(self, '选择图片', self.rootFile,
+                                                "Images(*.jpg *.png)")
+            if fname[0]:
+                self.imgUrl = fname[0]
+                self.statusInfo.setText("选择图片" + fname[0])
     def toHtml(self):
         strText = self.textEdit.toPlainText()
         if strText != "":
@@ -200,7 +220,7 @@ class EchartsWindow(QMainWindow):
             .add(series_name="", data_pair=date, word_size_range=[self.minFontSize, self.maxFontSize])
             .render("wordcloud_basic.html")
         )
-        self.statusInfo.setText("已生成网页basic_wordcloud.html")
+        self.statusInfo.setText("已生成网页wordcloud_basic.html")
     def toDiamondHtml(self, strText):
         date = self.encodeTuple(strText)
         (
@@ -211,12 +231,15 @@ class EchartsWindow(QMainWindow):
         self.statusInfo.setText("已生成网页wordcloud_diamond.html")
     def toCustom_mask_image(self, strText):
         date = self.encodeTuple(strText)
-        (
-            WordCloud()
-            .add("", date, word_size_range=[self.minFontSize, self.maxFontSize], mask_image="image/deepin.png")
-            .render("wordcloud_custom_mask_image.html")
-        )
-        self.statusInfo.setText("已生成网页wordcloud_custom_mask_image.html")
+        if self.imgUrl != "":
+            (
+                WordCloud()
+                .add("", date, word_size_range=[self.minFontSize, self.maxFontSize], mask_image=self.imgUrl)
+                .render("wordcloud_custom_mask_image.html")
+            )
+            self.statusInfo.setText("已生成网页wordcloud_custom_mask_image.html")
+        else:
+            self.statusInfo.setText("选择的图片为空")
     def toImg(self):
         self.statusInfo.setText("正在生成图片")
         str = self.textEdit.toPlainText()
