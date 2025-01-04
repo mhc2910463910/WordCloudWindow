@@ -19,21 +19,21 @@
 
 ##### 词云图
 
-![](example/example.png)
-
-[示例](example/example.html)
+[示例](example/example.html ':include :type=iframe')
 
 ##### 如何导出为图片？
 
 文档： [渲染图片](https://pyecharts.org/#/zh-cn/render_images)
 
-1. [snapshot-selenium](https://github.com/pyecharts/snapshot-selenium) 是 pyecharts + selenium 渲染图片的扩展，使用 selenium 需要配置 browser driver，这部分可以参考 [selenium-python](https://selenium-python.readthedocs.io/installation.html#drivers) 相关介绍，推荐使用 Chrome 浏览器，可以开启 headless 模式。目前支持 Chrome, Safari。
-2. [snapshot-phantomjs](https://github.com/pyecharts/snapshot-phantomjs) 是 pyecharts + phantomjs 渲染图片的扩展，需要先安装 phantomjs，安装方法请参照官网 [phantomjs.org/download.html](http://phantomjs.org/download.html)
-3. [snapshot-pyppeteer](https://github.com/pyecharts/snapshot-pyppeteer) 是 pyecharts + pyppeteer 渲染图片的扩展，需要先安装 pyppeteer 和 Chromium 安装方法请参照仓库地址 [snapshot-pyppeteer](https://github.com/pyecharts/snapshot-pyppeteer)
+- [snapshot-selenium](https://github.com/pyecharts/snapshot-selenium) 是 pyecharts + selenium 渲染图片的扩展，使用 selenium 需要配置 browser driver，这部分可以参考 [selenium-python](https://selenium-python.readthedocs.io/installation.html#drivers) 相关介绍，推荐使用 Chrome 浏览器，可以开启 headless 模式。目前支持 Chrome, Safari。
 
->  第一种使用selenium，如果是chrome浏览器，需要找到对应版本的chromedriver，比较麻烦，未做尝试。
->
-> 第二种使用phantomjs，按照官网安装，尝试了，但是生成的图片空白。
->
-> 第三种未作尝试。
+> 使用selenium，如果是chrome浏览器，需要找到对应版本的chromedriver，比较麻烦，未做尝试。
+
+- [snapshot-phantomjs](https://github.com/pyecharts/snapshot-phantomjs) 是 pyecharts + phantomjs 渲染图片的扩展，需要先安装 phantomjs，安装方法请参照官网 [phantomjs.org/download.html](http://phantomjs.org/download.html)
+
+> 使用phantomjs，按照官网安装，尝试了，但是生成的图片空白。
+
+- [snapshot-pyppeteer](https://github.com/pyecharts/snapshot-pyppeteer) 是 pyecharts + pyppeteer 渲染图片的扩展，需要先安装 pyppeteer 和 Chromium 安装方法请参照仓库地址 [snapshot-pyppeteer](https://github.com/pyecharts/snapshot-pyppeteer)
+
+>  未作尝试。
 
